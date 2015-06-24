@@ -1,6 +1,7 @@
 (ns cassatest.generators
   (:require
-    [clojure.edn :as edn]))
+    [clojure.edn :as edn])
+  (:import (java.util UUID)))
 ;;
 ;; usage (parse-generator {:type :int-range :form 1 :to 10})
 ;;
@@ -18,6 +19,16 @@
   (fn []
     v))
 
+(defmethod gen-create :uuid [_]
+  (fn []
+    (UUID/randomUUID)))
+
+(defmethod gen-create :rand-chars [{:keys [length] :or {length 4}}]
+  (let [seed (vec (map char (range 97 123)))]
+    (fn []
+      (apply str (take length (shuffle seed))))))
+
+
 (defn parse-generator
   "Takes a associative argument with format
   {:type :range-int :from number :to number}
@@ -29,7 +40,9 @@
                           (throw (RuntimeException. (str "Bad definition " m " expecting {:type :int-range :from number :to number}"))))
     (= type :constant) (if-not v
                          (throw (RuntimeException. (str "Bad definition " m " expecting {:type :constant :v value}"))))
+    (= type :uuid) nil
+    (= type :rand-chars) nil
     :default
-    (throw (RuntimeException. (str "Bad definition type " type " in " m " is not supported please use :int-range or :constant"))))
+    (throw (RuntimeException. (str "Bad definition type " type " in " m " is not supported please use :int-range, :uuid, :rand-chars :constant"))))
 
   (gen-create m))

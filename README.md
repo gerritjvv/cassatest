@@ -41,6 +41,34 @@ An example query where the parameter 'a' is replaced by a random number between 
 --params="{:a {:type :int-range :from 0 :to 10}}"
 ```
 
+### Generators
+
+Random integer from rante [from to)  
+
+```clojure
+{:type :int-range :from 0 :to 10}
+```
+
+Constant  
+
+```clojure
+{:type :constant :v value}
+```
+
+Random chars  
+
+
+```clojure
+;will return 10 random chars from a-z
+{:type :rand-chars :length 10}
+```
+
+Random UUID
+
+```clojure
+{:type :uuid}
+```
+
 Note that params must be written in edn notation.  
 
 ## License
