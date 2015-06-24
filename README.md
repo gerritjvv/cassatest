@@ -23,8 +23,9 @@ Options:
   -r, --thread-rate-limit limit  2147483647  Integer that sets the rate at which each thread can query
   -i, --iterations n             1000        Number of iterations i.e queries a thread should do
   -n, --threads n                1           Number of threads to use
+  -C, --consistency consistency  :one        Cassandra consistency each-quorum,one,local-quorum,quorum,three,all,serial,two,any
+  -T, --duration duration                    If specified iterations are ignored and threads will run for this amount of time in seconds
   -h, --help
-
 
 ```
 
@@ -70,6 +71,12 @@ Random UUID
 ```
 
 Note that params must be written in edn notation.  
+
+### Duration testing
+
+If the attribute ```duration``` is specified the ```iterations``` option is ignored and  
+threads will run for ```duration``` seconds.  
+
 
 ## License
 
