@@ -19,4 +19,5 @@
                            [org.clojure/tools.cli "0.3.1"]
                            [org.clojure/tools.logging "0.3.1"]
                            [com.google.guava/guava "18.0"]
-                           [clojurewerkz/cassaforte "2.0.0"]])
+                           [clojurewerkz/cassaforte "2.0.0"]
+                           [metrics-clojure "2.4.0"]])

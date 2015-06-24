@@ -1,6 +1,7 @@
 (ns cassatest.cassandra
   (:require [cassatest.exec :as exec]
-            [clojurewerkz.cassaforte.client :as cc]))
+            [clojurewerkz.cassaforte.client :as cc]
+            [cassatest.metrics :as metrics]))
 ;;
 ;; Usage (def c (connect {:type :cassaforte :hosts [host1 host2]}))
 ;; (query c sql params)
@@ -56,8 +57,11 @@
    Returns a delay that should be used for waiting on completion"
   [{:keys [hosts threads thread-rate-limit query params iterations] :as state}]
   {:pre [(coll? hosts) (number? threads) (number? thread-rate-limit) (string? query) (associative? params) (number? iterations)]}
-  (exec/via-threads! state threads (exec/rate-limited thread-rate-limit iterations (fn [state]
-                                                                                     (let [state2 (if (:type state) state (assoc state :type :cassaforte))
-                                                                                           c (connect state2)]
-                                                                                       (fn []
-                                                                                         (-query c query params)))))))
+  (exec/via-threads! state threads
+                     (exec/rate-limited thread-rate-limit iterations
+                                        (metrics/metrics-f (metrics/start {})
+                                                           (fn [state]
+                                                             (let [state2 (if (:type state) state (assoc state :type :cassaforte))
+                                                                   c (connect state2)]
+                                                               (fn []
+                                                                 (-query c query params))))))))
