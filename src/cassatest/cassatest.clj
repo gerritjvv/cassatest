@@ -70,4 +70,6 @@
     (cond
       (:help options) (exit 0 (usage summary))
       errors (exit 1 (error-msg errors))
-      :default (run-queries! options))))
+      :default (run-queries! options))
+
+    (System/exit 0)))
