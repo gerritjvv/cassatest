@@ -1,11 +1,10 @@
 (ns cassatest.cassatest
   (:require [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
+            [clojure.string :as string]
             [cassatest.config :as config]
-            [cassatest.cassandra :as cassandra]
-            [cassatest.exec :as exec])
-  (:gen-class)
-  (:import (java.net InetAddress)))
+            [cassatest.cassandra :as cassandra])
+  (:gen-class))
 
 (def cli-options
   [["-H" "--hosts HOST" "Comma separated string of remote hosts"
@@ -32,6 +31,15 @@
    ["-n" "--threads n" "Number of threads to use"
     :parse-fn #(Integer/parseInt %)
     :default config/DEFAULT-THREADS]
+
+
+   ["-C" "--consistency consistency" (str "Cassandra consistency " (string/join \, (map name config/CONSISTENCY-LEVELS)))
+    :parse-fn config/parse-consistency-arg
+    :default config/DEFAULT-CONSISTENCY]
+
+   ["-T" "--duration duration" "If specified iterations are ignored and threads will run for this amount of time in seconds"
+    :parse-fn #(Long/parseLong %)
+    :default nil]
 
    ["-h" "--help"]])
 

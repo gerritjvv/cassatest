@@ -15,8 +15,8 @@
 
 (defmulti connect :type)
 
-(defmethod connect :cassaforte [{:keys [hosts]}]
-  (let [session (cc/connect hosts)]
+(defmethod connect :cassaforte [{:keys [hosts consistency]}]
+  (let [session (cc/connect hosts {:consistency-level consistency})]
     (reify Cassandra
       (-query [_ sql params]
         (cc/execute session (apply-params sql params)))
@@ -55,13 +55,16 @@
 (defn run-queries!
   "Run queries in multiple threads and rate limited
    Returns a delay that should be used for waiting on completion"
-  [{:keys [hosts threads thread-rate-limit query params iterations] :as state}]
+  [{:keys [hosts threads thread-rate-limit query params iterations duration] :as state}]
   {:pre [(coll? hosts) (number? threads) (number? thread-rate-limit) (string? query) (associative? params) (number? iterations)]}
-  (exec/via-threads! state threads
-                     (exec/rate-limited thread-rate-limit iterations
-                                        (metrics/metrics-f (metrics/start {})
-                                                           (fn [state]
-                                                             (let [state2 (if (:type state) state (assoc state :type :cassaforte))
-                                                                   c (connect state2)]
-                                                               (fn []
-                                                                 (-query c query params))))))))
+  (let [f (metrics/metrics-f (metrics/start {})
+                             (fn [state]
+                               (let [state2 (if (:type state) state (assoc state :type :cassaforte))
+                                     c (connect state2)]
+                                 (fn []
+                                   (-query c query params)))))]
+
+    (exec/via-threads! state threads
+                       (if duration
+                         (exec/rate-limited-duration thread-rate-limit duration f)
+                         (exec/rate-limited-iterations thread-rate-limit iterations f)))))

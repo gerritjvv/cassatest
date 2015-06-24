@@ -1,10 +1,10 @@
 (ns cassatest.exec
   (:require [clojure.tools.logging :refer [error info]])
-  (:import (java.util.concurrent Executors CountDownLatch ExecutorService)
+  (:import (java.util.concurrent Executors CountDownLatch ExecutorService TimeUnit)
            (com.google.common.util.concurrent RateLimiter)))
 
 
-(defn rate-limited
+(defn rate-limited-iterations
   "f must be (fn [state] (fn [] do things here))
    Calls f's return function iterations times and limit the rate at which its called via rate-limit
    Returns (fn [state] (fn [] ))"
@@ -17,6 +17,24 @@
         (dotimes [_ iterations]
           (.acquire limiter)
           (f2))))))
+
+(set! *unchecked-math* true)
+
+(defn rate-limited-duration
+  "f must be (fn [state] (fn [] do things here))
+   Calls f's return function during duration seconds and limit the rate at which its called via rate-limit
+   Returns (fn [state] (fn [] ))"
+  [rate-limit duration-seconds f]
+  {:pre [(number? rate-limit) (number? duration-seconds) (fn? f)]}
+  (fn [state]
+    (let [^RateLimiter limiter (RateLimiter/create (double rate-limit))
+          f2 (f state)
+          duration-ms (.toMillis TimeUnit/SECONDS duration-seconds)
+          start (System/currentTimeMillis)]
+      (fn []
+        (while (<= (- (System/currentTimeMillis) (long start)) (long duration-ms)))
+          (.acquire limiter)
+          (f2)))))
 
 (defn submit
   "Runs f in a try catch"

@@ -19,16 +19,27 @@
 (deftest test-rate-limited []
                            (let [counter (atom 0)
                                  test-f (fn [state] (fn [] (swap! counter inc)))
-                                 rate-f (api/rate-limited 100 100 test-f)]
+                                 rate-f (api/rate-limited-iterations 100 100 test-f)]
 
                              ((rate-f {}))
                              (is (= @counter 100))))
 
 
+
+(deftest test-rate-limited []
+                           (let [counter (atom 0)
+                                 test-f (fn [state] (fn [] (swap! counter inc)))
+                                 start (System/currentTimeMillis)
+                                 rate-f (api/rate-limited-duration 100 5 test-f)]
+
+                             ((rate-f {}))
+                             (is (pos? @counter))
+                             (is (>= (- (System/currentTimeMillis) start) 5000))))
+
 (deftest test-rate-threading []
                              (let [counter (atom 0)
                                    test-f (fn [state] (fn [] (swap! counter inc)))
-                                   rate-f (api/rate-limited 100 100 test-f)
+                                   rate-f (api/rate-limited-iterations 100 100 test-f)
                                    latch (api/via-threads! {} 2 rate-f)]
 
                                @latch

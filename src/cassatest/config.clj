@@ -4,6 +4,9 @@
             [clojure.string :as string]))
 
 
+(defonce CONSISTENCY-LEVELS #{:any :one :two :three :quorum :all :serial :local-quorum :each-quorum})
+
+(defonce DEFAULT-CONSISTENCY :one)
 (defonce DEFAULT-PARAMS {})
 (defonce DEFAULT-HOSTS ["localhost"])
 (defonce DEFAULT-THREADS 1)
@@ -34,3 +37,10 @@
   (if s
     (string/split s #"[,; ]")
     DEFAULT-HOSTS))
+
+(defn parse-consistency-arg
+  [s]
+  (let [consistency-level (keyword s)]
+    (if (CONSISTENCY-LEVELS consistency-level)
+      consistency-level
+      (throw (RuntimeException. (str "Consistency Level " consistency-level " is not supported, please use " CONSISTENCY-LEVELS))))))
