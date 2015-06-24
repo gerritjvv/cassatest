@@ -11,6 +11,9 @@
 
             :jvm-opts ["-Xmx1g"]
 
+            :main cassatest.cassatest
+            :aot [cassatest.cassatest]
+
             :prep-tasks ["javac" "compile"]
             :dependencies [[org.clojure/clojure "1.7.0-RC1"]
                            [org.clojure/tools.cli "0.3.1"]
