@@ -1,6 +1,6 @@
 # cassatest
 
-A Clojure library designed to ... well, that part is up to you.
+A cassandra library to help with testing reads allowing to specify threads and rate limits 
 
 ## Usage
 
