@@ -1,12 +1,15 @@
 (ns cassatest.config
   (:require [clojure.edn :as edn]
             [cassatest.generators :as gen]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojurewerkz.cassaforte.policies :as cp]))
 
 
 (defonce CONSISTENCY-LEVELS #{:any :one :two :three :quorum :all :serial :local-quorum :each-quorum})
+(defonce RETRY-POLICIES #{:default :downgrading-consistency :fallthrough})
 
 (defonce DEFAULT-CONSISTENCY :one)
+(defonce DEFAULT-RETRY-POLICY :default)
 (defonce DEFAULT-PARAMS {})
 (defonce DEFAULT-HOSTS ["localhost"])
 (defonce DEFAULT-THREADS 1)
@@ -44,3 +47,10 @@
     (if (CONSISTENCY-LEVELS consistency-level)
       consistency-level
       (throw (RuntimeException. (str "Consistency Level " consistency-level " is not supported, please use " CONSISTENCY-LEVELS))))))
+
+(defn parse-retry-arg
+  [s]
+  (let [retry (keyword s)]
+    (if (RETRY-POLICIES retry)
+      (cp/retry-policy retry)
+      (throw (RuntimeException. (str "Retry policy " retry " is not supported, please use " RETRY-POLICIES))))))

@@ -77,6 +77,11 @@ Note that params must be written in edn notation.
 If the attribute ```duration``` is specified the ```iterations``` option is ignored and  
 threads will run for ```duration``` seconds.  
 
+### Retry Policies
+
+```
+default downgrading-consistency fallthrough
+```
 
 ## License
 

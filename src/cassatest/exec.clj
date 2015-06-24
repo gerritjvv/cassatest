@@ -32,9 +32,9 @@
           duration-ms (.toMillis TimeUnit/SECONDS duration-seconds)
           start (System/currentTimeMillis)]
       (fn []
-        (while (<= (- (System/currentTimeMillis) (long start)) (long duration-ms)))
+        (while (<= (- (System/currentTimeMillis) (long start)) (long duration-ms))
           (.acquire limiter)
-          (f2)))))
+          (f2))))))
 
 (defn submit
   "Runs f in a try catch"

@@ -15,8 +15,8 @@
 
 (defmulti connect :type)
 
-(defmethod connect :cassaforte [{:keys [hosts consistency]}]
-  (let [session (cc/connect hosts {:consistency-level consistency})]
+(defmethod connect :cassaforte [{:keys [hosts consistency retry]}]
+  (let [session (cc/connect hosts {:consistency-level consistency :retry-policy retry})]
     (reify Cassandra
       (-query [_ sql params]
         (cc/execute session (apply-params sql params)))

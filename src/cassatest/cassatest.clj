@@ -37,6 +37,11 @@
     :parse-fn config/parse-consistency-arg
     :default config/DEFAULT-CONSISTENCY]
 
+
+   ["-R" "--retry retry-policy" (str "Cassandra retry-policy " (string/join \, (map name config/RETRY-POLICIES)))
+    :parse-fn config/parse-retry-arg
+    :default config/DEFAULT-RETRY-POLICY]
+
    ["-T" "--duration duration" "If specified iterations are ignored and threads will run for this amount of time in seconds"
     :parse-fn #(Long/parseLong %)
     :default nil]
