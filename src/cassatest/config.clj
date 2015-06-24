@@ -9,7 +9,7 @@
 (defonce RETRY-POLICIES #{:default :downgrading-consistency :fallthrough})
 
 (defonce DEFAULT-CONSISTENCY :one)
-(defonce DEFAULT-RETRY-POLICY :default)
+(defonce DEFAULT-RETRY-POLICY (cp/retry-policy :default))
 (defonce DEFAULT-PARAMS {})
 (defonce DEFAULT-HOSTS ["localhost"])
 (defonce DEFAULT-THREADS 1)
