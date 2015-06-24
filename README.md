@@ -24,9 +24,9 @@ Options:
   -i, --iterations n             1000        Number of iterations i.e queries a thread should do
   -n, --threads n                1           Number of threads to use
   -C, --consistency consistency  :one        Cassandra consistency each-quorum,one,local-quorum,quorum,three,all,serial,two,any
+  -R, --retry retry-policy       :default    Cassandra retry-policy downgrading-consistency,default,fallthrough
   -T, --duration duration                    If specified iterations are ignored and threads will run for this amount of time in seconds
   -h, --help
-
 ```
 
 ### Queries and parameters
