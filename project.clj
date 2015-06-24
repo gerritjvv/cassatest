@@ -1,6 +1,6 @@
 (defproject cassatest "0.1.0-SNAPSHOT"
-            :description "FIXME: write description"
-            :url "http://example.com/FIXME"
+            :description "A cassandra library to help with testing reads allowing to specify threads and rate limits — Edit"
+            :url "https://github.com/gerritjvv/cassatest"
             :license {:name "Eclipse Public License"
                       :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
