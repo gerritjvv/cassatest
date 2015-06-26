@@ -17,15 +17,18 @@ java -jar -Xmx2048m <jar> -h
 Usage: cassatest [options]
 
 Options:
-  -H, --hosts HOST               localhost   Comma separated string of remote hosts
-  -q, --query query                          SQL Query, if params specified use as template e.g select a, b from table where a = {myvar} and b = {myvar2} then in params use {:myvar {:type :int-range :from 0 :to 10} :myvar2 {:type :constant :v 10}}
-  -P, --params params            {}          {:myvar {:type :int-range :from 0 :to 10} :myvar2 {:type :constant :v 10}}
-  -r, --thread-rate-limit limit  2147483647  Integer that sets the rate at which each thread can query
-  -i, --iterations n             1000        Number of iterations i.e queries a thread should do
-  -n, --threads n                1           Number of threads to use
-  -C, --consistency consistency  :one        Cassandra consistency each-quorum,one,local-quorum,quorum,three,all,serial,two,any
-  -R, --retry retry-policy       :default    Cassandra retry-policy downgrading-consistency,default,fallthrough
-  -T, --duration duration                    If specified iterations are ignored and threads will run for this amount of time in seconds
+  -H, --hosts HOST                                       localhost                                                      Comma separated string of remote hosts
+  -q, --query query                                                                                                     SQL Query, if params specified use as template e.g select a, b from table where a = {myvar} and b = {myvar2} then in params use {:myvar {:type :int-range :from 0 :to 10} :myvar2 {:type :constant :v 10}}
+  -P, --params params                                    {}                                                             {:myvar {:type :int-range :from 0 :to 10} :myvar2 {:type :constant :v 10}}
+  -r, --thread-rate-limit limit                          2147483647                                                     Integer that sets the rate at which each thread can query
+  -i, --iterations n                                     1000                                                           Number of iterations i.e queries a thread should do
+  -n, --threads n                                        1                                                              Number of threads to use
+  -C, --consistency consistency                          :one                                                           Cassandra consistency each-quorum,one,local-quorum,quorum,three,all,serial,two,any
+  -R, --retry retry-policy                               :default                                                       Cassandra retry-policy retry,downgrading-consistency,default,fallthrough
+  -x, --read-attempts retry-read-attempts                1                                                              Cassandra retry-policy==:retry read attempts
+  -y, --write-attempts retry-write-attempts              1                                                              Cassandra retry-policy==:retry write attempts
+  -z, --unavailable-attempts retry-unavailable-attempts  1                                                              Cassandra retry-policy==:retry unavailable attempts
+  -T, --duration duration                                                                                               If specified iterations are ignored and threads will run for this amount of time in seconds
   -h, --help
 ```
 
@@ -80,8 +83,11 @@ threads will run for ```duration``` seconds.
 ### Retry Policies
 
 ```
-default downgrading-consistency fallthrough
+default downgrading-consistency fallthrough retry
 ```
+
+If retry is specified as a retry-policy the properties ```read-attempts, write-attempts, and unavaialble-attempts``` are used  
+all of which default to 1 if not specified.  
 
 ## License
 
