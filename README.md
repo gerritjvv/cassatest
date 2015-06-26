@@ -86,7 +86,7 @@ threads will run for ```duration``` seconds.
 default downgrading-consistency fallthrough retry
 ```
 
-If retry is specified as a retry-policy the properties ```read-attempts, write-attempts, and unavaialble-attempts``` are used  
+If ```retry``` is specified as a retry-policy the properties ```read-attempts, write-attempts, and unavailable-attempts``` are used  
 all of which default to 1 if not specified.  
 
 ## License
