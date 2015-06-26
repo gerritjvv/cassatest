@@ -6,7 +6,8 @@
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.string :as string]
             [cassatest.config :as config]
-            [cassatest.cassandra :as cassandra])
+            [cassatest.cassandra :as cassandra]
+            [cassatest.metrics :as metrics])
   (:gen-class))
 
 (def cli-options
@@ -86,10 +87,9 @@
 
 (defn run-queries! [{:keys [threads iterations] :as conf}]
   (let [start (System/currentTimeMillis)
-        latch (cassandra/run-queries! conf)
-        cnt (* threads iterations)]
+        {:keys [latch metrics-ctx]} (cassandra/run-queries! conf)]
     @latch
-    (println cnt " queries in " (- (System/currentTimeMillis) start) "ms")))
+    (println (metrics/queries-counter metrics-ctx) " queries in " (- (System/currentTimeMillis) start) "ms")))
 
 (defn parse-options [args]
   (parse-opts args cli-options))

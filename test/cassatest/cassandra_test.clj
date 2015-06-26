@@ -15,16 +15,16 @@
                                 threads 10
                                 thread-rate-limit 1000
                                 iterations 10]
-                            (let [latch (cassandra/run-queries!
-                                          {:hosts ["localhost"]
-                                           :threads threads
-                                           :thread-rate-limit thread-rate-limit
-                                           :query "select * from test"
-                                           :params {}
-                                           :iterations iterations
-                                           ;;add type :mock for testing
-                                           :type :mock
-                                           :mock (mock-cassandra counter)})]
+                            (let [latch (:latch (cassandra/run-queries!
+                                                  {:hosts ["localhost"]
+                                                   :threads threads
+                                                   :thread-rate-limit thread-rate-limit
+                                                   :query "select * from test"
+                                                   :params {}
+                                                   :iterations iterations
+                                                   ;;add type :mock for testing
+                                                   :type :mock
+                                                   :mock (mock-cassandra counter)}))]
                               @latch
                               (is (= @counter (* threads iterations))))))
 
@@ -36,15 +36,15 @@
                                 threads 10
                                 thread-rate-limit 1000
                                 iterations 10]
-                            (let [latch (cassatest/run-queries!
-                                          {:hosts ["localhost"]
-                                           :threads threads
-                                           :thread-rate-limit thread-rate-limit
-                                           :query "select * from test"
-                                           :params {}
-                                           :iterations iterations
-                                           ;;add type :mock for testing
-                                           :type :mock
-                                           :mock (mock-cassandra counter)})]
+                            (let [latch (:latch (cassatest/run-queries!
+                                                  {:hosts ["localhost"]
+                                                   :threads threads
+                                                   :thread-rate-limit thread-rate-limit
+                                                   :query "select * from test"
+                                                   :params {}
+                                                   :iterations iterations
+                                                   ;;add type :mock for testing
+                                                   :type :mock
+                                                   :mock (mock-cassandra counter)}))]
 
                               (is (= @counter (* threads iterations))))))

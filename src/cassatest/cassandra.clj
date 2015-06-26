@@ -61,17 +61,22 @@
 
 (defn run-queries!
   "Run queries in multiple threads and rate limited
-   Returns a delay that should be used for waiting on completion"
+   Returns a map, keys [latch, metrics-ctx]
+    latch = a delay that should be used for waiting on completion
+    metrics-ctx = the metrics ctx to query metrics via the cassatest.metrics namespace"
   [{:keys [hosts threads thread-rate-limit query params iterations duration] :as state}]
   {:pre [(coll? hosts) (number? threads) (number? thread-rate-limit) (string? query) (associative? params) (number? iterations)]}
-  (let [f (metrics/metrics-f (metrics/start {})
+  (let [metrics-ctx (metrics/start {})
+        f
+          (metrics/metrics-f metrics-ctx
                              (fn [state]                    ;state is called from via-threads!
                                (let [state2 (if (:type state) state (assoc state :type :cassaforte))
                                      c (connect state2)]
                                  (fn []
                                    (-query c query params)))))]
 
-    (exec/via-threads! state threads
-                       (if duration
-                         (exec/rate-limited-duration thread-rate-limit duration f)
-                         (exec/rate-limited-iterations thread-rate-limit iterations f)))))
+    {:latch (exec/via-threads! state threads
+                               (if duration
+                                 (exec/rate-limited-duration thread-rate-limit duration f)
+                                 (exec/rate-limited-iterations thread-rate-limit iterations f)))
+     :metrics-ctx metrics-ctx}))
