@@ -1,10 +1,13 @@
-(ns cassatest.generators
+(ns
+  ^{:doc "Automatically generate query values from integer ranges, constants, uuids to random text
+         usage (parse-generator {:type :int-range :form 1 :to 10})
+         gen-create is a factory pattern that looks for the :type keyword
+         each new generator should defmethod on gen-create"}
+  cassatest.generators
   (:require
     [clojure.edn :as edn])
   (:import (java.util UUID)))
-;;
-;; usage (parse-generator {:type :int-range :form 1 :to 10})
-;;
+
 (set! *unchecked-math* true)
 
 (defmulti gen-create :type)

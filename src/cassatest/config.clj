@@ -1,15 +1,23 @@
-(ns cassatest.config
+(ns
+  ^{:doc "Handles the different configuration option parsing and validation"}
+  cassatest.config
   (:require [clojure.edn :as edn]
             [cassatest.generators :as gen]
+            [cassatest.policies :as policies]
             [clojure.string :as string]
             [clojurewerkz.cassaforte.policies :as cp]))
 
 
 (defonce CONSISTENCY-LEVELS #{:any :one :two :three :quorum :all :serial :local-quorum :each-quorum})
-(defonce RETRY-POLICIES #{:default :downgrading-consistency :fallthrough})
+(defonce RETRY-POLICIES policies/RETRY-POLICIES)
 
 (defonce DEFAULT-CONSISTENCY :one)
+
+(defonce DEFAULT-RETRY-READ 1)
+(defonce DEFAULT-RETRY-WRITE 1)
+(defonce DEFAULT-RETRY-UNAVAILABLE 1)
 (defonce DEFAULT-RETRY-POLICY (cp/retry-policy :default))
+
 (defonce DEFAULT-PARAMS {})
 (defonce DEFAULT-HOSTS ["localhost"])
 (defonce DEFAULT-THREADS 1)
@@ -49,8 +57,10 @@
       (throw (RuntimeException. (str "Consistency Level " consistency-level " is not supported, please use " CONSISTENCY-LEVELS))))))
 
 (defn parse-retry-arg
+  "Returns a function that will call policies/create [state] retry state to allow deferred initialisation
+   for custom policies"
   [s]
   (let [retry (keyword s)]
     (if (RETRY-POLICIES retry)
-      (cp/retry-policy retry)
+      #(policies/create retry %)
       (throw (RuntimeException. (str "Retry policy " retry " is not supported, please use " RETRY-POLICIES))))))

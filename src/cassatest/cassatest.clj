@@ -1,4 +1,7 @@
-(ns cassatest.cassatest
+(ns
+  ^{:doc "Main application to run, contains the cli options and main function
+          Note all cli parsing is delegated to cassatest.config"}
+  cassatest.cassatest
   (:require [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.string :as string]
@@ -41,6 +44,20 @@
    ["-R" "--retry retry-policy" (str "Cassandra retry-policy " (string/join \, (map name config/RETRY-POLICIES)))
     :parse-fn config/parse-retry-arg
     :default config/DEFAULT-RETRY-POLICY]
+
+   ["-x" "--read-attempts retry-read-attempts" "Cassandra retry-policy==:retry read attempts"
+    :parse-fn #(Integer/parseInt %)
+    :default config/DEFAULT-RETRY-READ]
+
+
+   ["-y" "--write-attempts retry-write-attempts" "Cassandra retry-policy==:retry write attempts"
+    :parse-fn #(Integer/parseInt %)
+    :default config/DEFAULT-RETRY-WRITE]
+
+
+   ["-z" "--unavailable-attempts retry-unavailable-attempts" "Cassandra retry-policy==:retry unavailable attempts"
+    :parse-fn #(Integer/parseInt %)
+    :default config/DEFAULT-RETRY-UNAVAILABLE]
 
    ["-T" "--duration duration" "If specified iterations are ignored and threads will run for this amount of time in seconds"
     :parse-fn #(Long/parseLong %)

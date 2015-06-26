@@ -1,4 +1,6 @@
-(ns cassatest.exec
+(ns
+  ^{:doc "function that help with executing functions in threads and with rate limits"}
+  cassatest.exec
   (:require [clojure.tools.logging :refer [error info]])
   (:import (java.util.concurrent Executors CountDownLatch ExecutorService TimeUnit)
            (com.google.common.util.concurrent RateLimiter)))

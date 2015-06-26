@@ -1,11 +1,15 @@
-(ns cassatest.cassandra
+(ns
+  ^{:doc "Abstracts how Cassandra is used internally, to allow mocking and other implementations
+          Usage
+          (def c (connect {:type :cassaforte :hosts [host1 host2]}))
+          (query c sql params)
+          (close! c)"}
+  cassatest.cassandra
   (:require [cassatest.exec :as exec]
+            [cassatest.metrics :as metrics]
             [clojurewerkz.cassaforte.client :as cc]
-            [cassatest.metrics :as metrics]))
-;;
-;; Usage (def c (connect {:type :cassaforte :hosts [host1 host2]}))
-;; (query c sql params)
-;; (close! c)
+            [clojurewerkz.cassaforte.policies :as cp]))
+
 (declare apply-params)
 
 
@@ -15,8 +19,9 @@
 
 (defmulti connect :type)
 
-(defmethod connect :cassaforte [{:keys [hosts consistency retry]}]
-  (let [session (cc/connect hosts {:consistency-level consistency :retry-policy retry})]
+(defmethod connect :cassaforte [{:keys [hosts consistency retry] :as conf}]
+  {:pre [(not (empty? hosts)) (coll? hosts) (cp/consistency-levels consistency) (fn? retry)]}
+  (let [session (cc/connect hosts {:consistency-level consistency :retry-policy (retry conf)})]
     (reify Cassandra
       (-query [_ sql params]
         (cc/execute session (apply-params sql params)))
@@ -28,7 +33,9 @@
 
 
 
-(defn replace-templates [text m]
+(defn replace-templates
+  "Replace {var} in text with values in map {:var v}"
+  [text m]
   (clojure.string/replace text
                           #"\{\w+\}"
                           (fn [groups]
@@ -58,7 +65,7 @@
   [{:keys [hosts threads thread-rate-limit query params iterations duration] :as state}]
   {:pre [(coll? hosts) (number? threads) (number? thread-rate-limit) (string? query) (associative? params) (number? iterations)]}
   (let [f (metrics/metrics-f (metrics/start {})
-                             (fn [state]
+                             (fn [state]                    ;state is called from via-threads!
                                (let [state2 (if (:type state) state (assoc state :type :cassaforte))
                                      c (connect state2)]
                                  (fn []
