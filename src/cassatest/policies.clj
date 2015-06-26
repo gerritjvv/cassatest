@@ -33,15 +33,15 @@
     (onReadTimeout [_ stmnt cl required-responses received-responses dataReceived rtime]
       (cond
         dataReceived                          (RetryPolicy$RetryDecision/ignore)
-        (< (long rtime) (long read-attempts)) (RetryPolicy$RetryDecision/retry ^ConsistencyLevel cl)
+        (< rtime (long read-attempts)) (RetryPolicy$RetryDecision/retry ^ConsistencyLevel cl)
         :default                              (RetryPolicy$RetryDecision/rethrow)))
 
     (onWriteTimeout [_ stmnt cl wt required-responses received-responses wtime]
-      (if (< (long wtime) (long write-attempts))
+      (if (< wtime (long write-attempts))
         (RetryPolicy$RetryDecision/retry ^ConsistencyLevel cl)
         (RetryPolicy$RetryDecision/rethrow)))
 
     (onUnavailable [_ stmnt cl required-responses received-responses utime]
-      (if (< (long utime) (long unavailable-attempts))
+      (if (< utime (long unavailable-attempts))
         (RetryPolicy$RetryDecision/retry ^ConsistencyLevel cl)
         (RetryPolicy$RetryDecision/rethrow)))))
