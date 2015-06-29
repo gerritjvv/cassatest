@@ -5,7 +5,8 @@
          each new generator should defmethod on gen-create"}
   cassatest.generators
   (:require
-    [clojure.edn :as edn])
+    [clojure.java.io :as io]
+    [clojure.string :as string])
   (:import (java.util UUID)))
 
 (set! *unchecked-math* true)
@@ -32,12 +33,20 @@
       (apply str (take length (shuffle seed))))))
 
 
+
+(defmethod gen-create :rand-data [{:keys [file last] :or {file "/home/automaton/times.txt" last false}}]
+  (let [times (apply vector (filter not-empty (line-seq (io/reader file))))]
+    (if last
+      (let [last-time (first (reverse times))]
+        (fn [] last-time))
+      (fn [] (rand-nth times)))))
+
 (defn parse-generator
   "Takes a associative argument with format
   {:type :range-int :from number :to number}
   {:type :constant :v value}
   And returns a function that when called will return the value"
-  [{:keys [type from to v] :as m} ]
+  [{:keys [type from to v file] :as m} ]
   (cond
     (= type :int-range) (if-not (and (number? from) (number? to))
                           (throw (RuntimeException. (str "Bad definition " m " expecting {:type :int-range :from number :to number}"))))
@@ -45,7 +54,8 @@
                          (throw (RuntimeException. (str "Bad definition " m " expecting {:type :constant :v value}"))))
     (= type :uuid) nil
     (= type :rand-chars) nil
+    (= type :rand-data) (if-not (.exists (io/file file)) (throw (RuntimeException. (str "Bad definition " m " property file " file " must exist"))))
     :default
-    (throw (RuntimeException. (str "Bad definition type " type " in " m " is not supported please use :int-range, :uuid, :rand-chars :constant"))))
+    (throw (RuntimeException. (str "Bad definition type " type " in " m " is not supported please use :int-range, :uuid, :rand-chars :constant :rand-time"))))
 
   (gen-create m))
