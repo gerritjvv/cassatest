@@ -47,7 +47,7 @@ An example query where the parameter 'a' is replaced by a random number between 
 
 ### Generators
 
-Random integer from rante [from to)  
+Random integer from range [from to)  
 
 ```clojure
 {:type :int-range :from 0 :to 10}
@@ -71,6 +71,12 @@ Random UUID
 
 ```clojure
 {:type :uuid}
+```
+
+Random data
+
+```clojure
+{:type rand-data :file <line separated data file> :last <true only the last item is selected / false or not specified and a rand item is selected>}
 ```
 
 Note that params must be written in edn notation.  
