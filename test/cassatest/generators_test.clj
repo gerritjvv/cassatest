@@ -35,7 +35,7 @@
 
                          (let [f (gens/parse-generator {:type :rand-data :file "test-resources/times.txt" :last true})]
                            (is (string? (f)))
-                           (is (f) "5"))
+                           (is (= (f) "5")))
 
                          (try
                            (do (gens/parse-generator {:type :rand-data :file "test-resources/notexist"})

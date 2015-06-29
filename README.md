@@ -76,6 +76,7 @@ Random UUID
 Random data
 
 ```clojure
+;;empty lines are ignored
 {:type rand-data :file <line separated data file> :last <true only the last item is selected / false or not specified and a rand item is selected>}
 ```
 

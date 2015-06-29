@@ -35,7 +35,7 @@
 
 
 (defmethod gen-create :rand-data [{:keys [file last] :or {file "/home/automaton/times.txt" last false}}]
-  (let [times (apply vector (line-seq (io/reader file)))]
+  (let [times (apply vector (filter not-empty (line-seq (io/reader file))))]
     (if last
       (let [last-time (first (reverse times))]
         (fn [] last-time))
