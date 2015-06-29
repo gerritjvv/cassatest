@@ -31,6 +31,11 @@
     (fn []
       (apply str (take length (shuffle seed))))))
 
+(defmethod gen-create :rand-time [{:keys [file last] :or {file "/home/automaton/times.txt" last false}}]
+  (fn []
+    (if last
+       (apply str (take-last 1 (clojure.string/split (slurp file) #","))) 
+         (rand-nth (clojure.string/split (slurp file) #",")))))
 
 (defn parse-generator
   "Takes a associative argument with format
@@ -45,7 +50,8 @@
                          (throw (RuntimeException. (str "Bad definition " m " expecting {:type :constant :v value}"))))
     (= type :uuid) nil
     (= type :rand-chars) nil
+    (= type :rand-time) nil
     :default
-    (throw (RuntimeException. (str "Bad definition type " type " in " m " is not supported please use :int-range, :uuid, :rand-chars :constant"))))
+    (throw (RuntimeException. (str "Bad definition type " type " in " m " is not supported please use :int-range, :uuid, :rand-chars :constant :rand-time"))))
 
   (gen-create m))
