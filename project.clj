@@ -19,6 +19,6 @@
                            [org.clojure/tools.cli "0.3.1"]
                            [org.clojure/tools.logging "0.3.1"]
                            [com.google.guava/guava "18.0"]
-			   [com.datastax.cassandra:cassandra-driver-core "3.0.0-alpha5"]
+			   [com.datastax.cassandra/cassandra-driver-core "3.0.0-alpha5"]
                            [clojurewerkz/cassaforte "2.0.0" :exclude com.datastax.cassandra:cassandra-driver-core]
                            [metrics-clojure "2.4.0"]])
